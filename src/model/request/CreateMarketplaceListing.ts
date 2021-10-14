@@ -1,10 +1,8 @@
-import {Type} from 'class-transformer';
-import {IsBoolean, IsIn, IsNotEmpty, IsNumberString, IsOptional, Length, Min, Validate} from 'class-validator';
-import {AmountDecimalValidator} from '../validation/AmountDecimalValidator';
-import {PriceDecimalValidator} from '../validation/PriceDecimalValidator';
-import {Currency} from './Currency';
-import {Fee} from './Fee';
-import {PrivateKeyOrSignatureId} from './PrivateKeyOrSignatureId';
+import {Type} from 'class-transformer'
+import {IsBoolean, IsIn, IsNotEmpty, IsNumberString, IsOptional, Length, Min} from 'class-validator'
+import {Currency} from './Currency'
+import {Fee} from './Fee'
+import {PrivateKeyOrSignatureId} from './PrivateKeyOrSignatureId'
 
 export class CreateMarketplaceListing extends PrivateKeyOrSignatureId {
 
@@ -34,7 +32,6 @@ export class CreateMarketplaceListing extends PrivateKeyOrSignatureId {
 
     @IsNotEmpty()
     @IsNumberString()
-    @Validate(PriceDecimalValidator)
     public price: string;
 
     @IsNotEmpty()
@@ -43,7 +40,6 @@ export class CreateMarketplaceListing extends PrivateKeyOrSignatureId {
 
     @IsOptional()
     @IsNumberString()
-    @Validate(AmountDecimalValidator)
     public amount?: string;
 
     @IsNotEmpty()
