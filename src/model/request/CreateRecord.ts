@@ -24,7 +24,7 @@ export class CreateRecord {
     public data: string;
 
     @IsNotEmpty()
-    @IsIn([Currency.ETH, Currency.QUORUM, Currency.FABRIC, Currency.BSC, Currency.CELO, Currency.MATIC, Currency.XDC, Currency.ONE])
+    @IsIn([Currency.ETH, Currency.QUORUM, Currency.FABRIC, Currency.BSC, Currency.CELO, Currency.MATIC, Currency.XDC, Currency.ONE, Currency.EGLD])
     public chain: string;
 
     @ValidateIf(o => o.chain === Currency.CELO)
@@ -34,11 +34,11 @@ export class CreateRecord {
 
     @IsNotEmpty()
     @ValidateIf(o => o.chain === Currency.QUORUM)
-    @Length(42, 43)
+    @Length(42, 62)
     public from: string;
 
     @ValidateIf(o => o.chain === Currency.QUORUM || o.signatureId)
-    @Length(42, 43)
+    @Length(42, 62)
     public to?: string;
 
     @ValidateIf(o => o.chain === Currency.FABRIC)
