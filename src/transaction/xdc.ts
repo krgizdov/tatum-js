@@ -24,7 +24,6 @@ import {
     SmartContractMethodInvocation,
     SmartContractReadMethodInvocation,
     TransactionKMS,
-    TransferCustomErc20,
     TransferErc20,
     UpdateCashbackErc721
 } from '../model';
@@ -57,7 +56,7 @@ export const xdcGetGasPriceInWei = async () => {
  * @param fromPrivateKey optional private key of sender account
  */
 export const getXdcClient = (provider?: string, fromPrivateKey?: string) => {
-    const client = new Web3(provider || `${TATUM_API_URL}/v3/xdc/web3/${process.env.TATUM_API_KEY}`)
+    const client = new Web3(provider || `${process.env.TATUM_API_URL || TATUM_API_URL}/v3/xdc/web3/${process.env.TATUM_API_KEY}`);
     if (fromPrivateKey) {
         client.eth.accounts.wallet.clear()
         client.eth.accounts.wallet.add(fromPrivateKey)
@@ -260,8 +259,8 @@ export const prepareXdcOrErc20SignedTransaction = async (body: TransferErc20, pr
  * @param provider url of the XDC Server to connect to. If not set, default public server will be used.
  * @returns transaction data to be broadcast to blockchain.
  */
-export const prepareXdcCustomErc20SignedTransaction = async (body: TransferCustomErc20, provider?: string) => {
-    await validateBody(body, TransferCustomErc20)
+export const prepareXdcCustomErc20SignedTransaction = async (body: TransferErc20, provider?: string) => {
+    await validateBody(body, TransferErc20);
     const {
         fromPrivateKey,
         to,
@@ -271,19 +270,19 @@ export const prepareXdcCustomErc20SignedTransaction = async (body: TransferCusto
         fee,
         nonce,
         signatureId
-    } = body
+    } = body;
 
     const client = getXdcClient(provider, fromPrivateKey)
 
     // @ts-ignore
-    const contract = new client.eth.Contract([TRANSFER_METHOD_ABI], fromXdcAddress(contractAddress))
-    const decimals = new BigNumber(10).pow(digits)
+    const contract = new client.eth.Contract([TRANSFER_METHOD_ABI], fromXdcAddress(contractAddress));
+    const decimals = new BigNumber(10).pow(digits as number);
     const tx: TransactionConfig = {
         from: 0,
-        to: fromXdcAddress(contractAddress),
+        to: fromXdcAddress(contractAddress as string),
         data: contract.methods.transfer(fromXdcAddress(to), `0x${new BigNumber(amount).multipliedBy(decimals).toString(16)}`).encodeABI(),
         nonce,
-    }
+    };
 
     return await prepareErc20SignedTransactionAbstraction(client, tx, signatureId, fromPrivateKey, fee)
 }
@@ -391,14 +390,17 @@ export const prepareXdcMintErc721SignedTransaction = async (body: EthMintErc721,
 
     // @ts-ignore
     const contract = new (client).eth.Contract(erc721TokenABI, fromXdcAddress(contractAddress))
-    const tx: TransactionConfig = {
-        from: 0,
-        to: fromXdcAddress(contractAddress),
-        data: contract.methods.mintWithTokenURI(fromXdcAddress(to), tokenId, url).encodeABI(),
-        nonce,
-    }
+    if (contractAddress) {
+        const tx: TransactionConfig = {
+            from: 0,
+            to: fromXdcAddress(contractAddress),
+            data: contract.methods.mintWithTokenURI(fromXdcAddress(to), tokenId, url).encodeABI(),
+            nonce,
+        }
 
-    return await prepareErc20SignedTransactionAbstraction(client, tx, signatureId, fromPrivateKey, fee)
+        return await prepareErc20SignedTransactionAbstraction(client, tx, signatureId, fromPrivateKey, fee)
+    }
+    throw new Error('Contract address should not be empty!')
 }
 /**
  * Sign XDC mint ERC 721 transaction with cashback via private keys locally. Nothing is broadcast to the blockchain.
@@ -430,14 +432,18 @@ export const prepareXdcMintErcCashback721SignedTransaction = async (body: EthMin
     for (const c of cashbacks) {
         cb.push(`0x${new BigNumber(client.utils.toWei(c, 'ether')).toString(16)}`)
     }
-    const tx: TransactionConfig = {
-        from: 0,
-        to: fromXdcAddress(contractAddress),
-        data: contract.methods.mintWithCashback(fromXdcAddress(to), tokenId, url, authorAddresses, cb).encodeABI(),
-        nonce,
-    }
 
-    return await prepareErc20SignedTransactionAbstraction(client, tx, signatureId, fromPrivateKey, fee)
+    if (contractAddress) {
+        const tx: TransactionConfig = {
+            from: 0,
+            to: fromXdcAddress(contractAddress),
+            data: contract.methods.mintWithCashback(fromXdcAddress(to), tokenId, url, authorAddresses, cb).encodeABI(),
+            nonce,
+        }
+
+        return await prepareErc20SignedTransactionAbstraction(client, tx, signatureId, fromPrivateKey, fee)
+    }
+    throw new Error('Contract address should not be empty!')
 }
 
 /**
@@ -703,8 +709,8 @@ export const sendXdcOrErc20Transaction = async (body: TransferErc20, provider?: 
  * @param provider url of the XDC Server to connect to. If not set, default public server will be used.
  * @returns transaction id of the transaction in the blockchain
  */
-export const sendXdcCustomErc20Transaction = async (body: TransferCustomErc20, provider?: string) =>
-    xdcBroadcast(await prepareXdcCustomErc20SignedTransaction(body, provider), body.signatureId)
+export const sendXdcCustomErc20Transaction = async (body: TransferErc20, provider?: string) =>
+    xdcBroadcast(await prepareXdcCustomErc20SignedTransaction(body, provider), body.signatureId);
 
 /**
  * Send XDC deploy ERC20 transaction to the blockchain. This method broadcasts signed transaction to the blockchain.

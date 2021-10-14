@@ -31,6 +31,15 @@ $ npm run test
 
 ## Configuration and setup
 
+### Tatum API URL
+
+Provide URL to the Tatum API to process.env.TATUM_API_URL variable. Default URL is *https://api-eu1.tatum.io* You can
+use dotenv or any other way. There are modules and functions, that do not have to communicate with Tatum API, like
+wallet generation or signing of transactions locally. In those cases, there is no need to provide TATUM_API_URL
+parameter.
+
+```process.env.TATUM_API_URL=${YOUR_API_URL}```
+
 ### Tatum API KEY
 
 Provide Tatum API key to process.env.TATUM_API_KEY variable. You can use dotenv or any other way. There are modules and
@@ -44,7 +53,7 @@ those cases, there is no need to provide TATUM_API_KEY parameter.
 For Ethereum, there are 2 testnet chains supported - Ropsten (default one) and Rinkeby. To enable Rinkeby, you need to
 set up TESTNET_TYPE parameter to rinkeby.
 
-```process.env.TESTNET_TYPE=rinkeby```
+```process.env.TESTNET_TYPE=ethereum-rinkeby```
 
 ### Retry Delay
 
