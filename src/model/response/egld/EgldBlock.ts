@@ -4,19 +4,7 @@
  * @interface EgldBlock
  */
 
-export interface EgldInBlockTransaction {
-    type: string
-    hash: string
-    nonce: number
-    value: string
-    receiver: string
-    sender: string
-    gasPrice: number
-    gasLimit: number
-    data: string
-    signature: string
-    status: string
-}
+import { EgldTransaction } from './EgldTx'
 
 export interface EgldShardBlock {
     hash: string
@@ -32,5 +20,5 @@ export interface EgldBlock {
     epoch: number
     numTxs: number
     shardBlocks: EgldShardBlock[]
-    transactions: EgldInBlockTransaction[]
+    transactions: EgldTransaction[]
 }

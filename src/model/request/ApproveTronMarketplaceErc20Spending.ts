@@ -1,8 +1,8 @@
 import {IsNotEmpty, Length, Min, ValidateIf} from 'class-validator'
+import {ApproveMarketplaceErc20Spending} from './ApproveMarketplaceErc20Spending'
 import {Currency} from './Currency'
-import {TransferFromCustodialAddressBatch} from './TransferFromCustodialAddressBatch'
 
-export class TransferFromTronCustodialAddressBatch extends TransferFromCustodialAddressBatch {
+export class ApproveTronMarketplaceErc20Spending extends ApproveMarketplaceErc20Spending {
 
     @ValidateIf(o => o.signatureId && o.chain === Currency.TRON)
     @IsNotEmpty()

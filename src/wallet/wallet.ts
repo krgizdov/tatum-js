@@ -35,9 +35,6 @@ import {
 import {Currency} from '../model';
 import cardano from './cardano.crypto';
 
-const algosdk = require('algosdk');
-const base32 = require('base32.js');
-
 export interface Wallet {
 
     /**
@@ -312,21 +309,6 @@ export const generateAdaWallet = async (mnemonic: string): Promise<Wallet> => {
 }
 
 /**
- * Generate Algo wallet
- * @param mnem mnemonic seed to use
- * @returns address and secret
- */
-export const generateAlgoWallet = async (mnem: string) => {
-    const account = algosdk.mnemonicToSecretKey(mnem);
-    const encoder = new base32.Encoder({type: "rfc4648"});
-    const secret = encoder.write(account.sk).finalize();
-    return {
-        address: account.addr,
-        secret: secret,
-    }
-}
-
-/**
  * Generate wallet
  * @param currency blockchain to generate wallet for
  * @param testnet testnet or mainnet version of address
@@ -376,7 +358,6 @@ export const generateWallet = (currency: Currency, testnet: boolean, mnemonic?: 
         case Currency.TUSD:
         case Currency.BUSD:
         case Currency.USDC_BSC:
-        case Currency.B2U_BSC:
         case Currency.GMC:
         case Currency.GMC_BSC:
         case Currency.PAX:
@@ -386,7 +367,6 @@ export const generateWallet = (currency: Currency, testnet: boolean, mnemonic?: 
         case Currency.ETH:
         case Currency.BSC:
         case Currency.BETH:
-        case Currency.GAMEE:
         case Currency.CAKE:
         case Currency.MATIC_ETH:
         case Currency.HAG:
@@ -420,8 +400,6 @@ export const generateWallet = (currency: Currency, testnet: boolean, mnemonic?: 
             return generateLyraWallet(testnet, mnem)
         case Currency.ADA:
             return generateAdaWallet(mnem)
-        case Currency.ALGO:
-            return generateAlgoWallet(mnem)
         default:
             throw new Error('Unsupported blockchain.')
     }

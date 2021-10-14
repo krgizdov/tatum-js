@@ -1,2 +1,1 @@
-export * as listing from './listing';
-export * as auction from './auction';
+export * from './listing'
